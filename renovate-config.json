@@ -56,6 +56,12 @@
     {
       "matchPaths": ["build-logic/*", "buildSrc/*"],
       "groupName": "build deps and github actions"
+    },
+    { 
+      "matchDatasources": [ "maven" ],
+      "registryUrls": [ 
+        "https://repo.spongepowered.org/repository/maven-public/"
+      ]
     }
   ],
   "prHourlyLimit": 4,
