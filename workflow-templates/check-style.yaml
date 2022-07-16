@@ -8,5 +8,5 @@ on:
 
 jobs:
   call-check:
-    uses: SpongePowered/.github/shared-workflows/check-style.yaml@master
+    uses: SpongePowered/.github/.github/workflows/shared-check-style.yaml@master
     secrets: inherit

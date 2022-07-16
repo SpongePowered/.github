@@ -10,5 +10,5 @@ on:
 
 jobs:
   call-build:
-    uses: SpongePowered/.github/shared-workflows/ci.yaml@master
+    uses: SpongePowered/.github/.github/workflows/shared-ci.yaml@master
     secrets: inherit
