@@ -1,0 +1,11 @@
+{
+    "name": "Sponge CodeQL Analysis",
+    "description": "Sponge workflow to perform Java CodeQL analysis based on the GitHub template",
+    "categories": [
+        "Java"
+    ],
+    "filePatterns": [
+        "settings.gradle(?:.kts)?",
+        "build.gradle(?:.kts)?"
+    ]
+}

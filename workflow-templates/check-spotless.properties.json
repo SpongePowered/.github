@@ -1,0 +1,11 @@
+{
+    "name": "Sponge Spotless Check",
+    "description": "Sponge workflow to perform a Spotless check",
+    "categories": [
+        "Java"
+    ],
+    "filePatterns": [
+        "settings.gradle(?:.kts)?",
+        "build.gradle(?:.kts)?"
+    ]
+}

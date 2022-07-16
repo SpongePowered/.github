@@ -1,0 +1,47 @@
+
+name: Run Spotless Check
+
+on:
+  workflow_call:
+    inputs:
+      runtime_version:
+        description: 'The default Java runtime version to run builds on'
+        required: false
+        type: number
+        default: 11
+      publishing_branch_regex:
+        description: 'The regular expression to determine if a certain branch build should be published'
+        required: false
+        type: string
+        default: 'master|main|trunk|(\d+\.(?:\d+\.)?x)'
+
+jobs:
+  build:
+    # Only run on PRs if the source branch is on someone else's repo
+    if: "${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}"
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      - name: "Setup JDK ${{ inputs.runtime_version }}"
+        uses: actions/setup-java@v3
+        with:
+          distribution: temurin
+          java-version: "${{ inputs.runtime_version }}"
+      # Checks branch name to see if we're going to potentially publish this
+      - name: Check branch for publish
+        uses: actions-ecosystem/action-regex-match@v2.0.2
+        id: branch-name
+        with:
+          text: ${{ github.ref }}
+          regex: '^refs/heads/(?:${{ inputs.publishing_branch_regex }})$' # master or something like 0.8.x or 2.x
+
+      # Actually build
+      - name: Run Spotless Check
+        uses: gradle/gradle-build-action@v2
+        with:
+          cache-read-only: "${{ steps.branch-name.outputs.match == '' || github.event_name == 'pull_request' }}"
+          arguments: spotlessCheck

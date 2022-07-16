@@ -1,0 +1,11 @@
+{
+    "name": "Sponge Checkstyle Check",
+    "description": "Sponge workflow to perform a Checkstyle check",
+    "categories": [
+        "Java"
+    ],
+    "filePatterns": [
+        "settings.gradle(?:.kts)?",
+        "build.gradle(?:.kts)?"
+    ]
+}
