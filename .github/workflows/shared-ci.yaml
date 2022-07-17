@@ -15,8 +15,14 @@ on:
         default: 'master|main|trunk|(\d+\.(?:\d+\.)?x)'
       publish_snapshot_javadoc:
         description: 'Whether to publish Javadoc to the Javadoc site for snapshot builds'
-        type: string
+        type: boolean
         required: false
+        default: false
+      publish_release_javadoc:
+        description: 'Whether to publish Javadoc to the Javadoc site for release builds'
+        type: boolean
+        required: false
+        default: true
     secrets:
       SPONGE_JD_DEPLOY_KEY:
         description: 'SSH Key to deploy javadocs'
@@ -122,12 +128,12 @@ jobs:
           ORG_GRADLE_PROJECT_spongeSigningPassword: "${{ secrets.SPONGE_SIGNING_PASSWORD }}"
 
       - name: Copy Javadoc for Publication
-        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && github.event_name == 'release')) }}"
+        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
         run: |
           mkdir -p build/publish-jd
           ./gradlew copyJavadoc --output build/publish-jd
       - name: Publish Javadoc
-        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && github.event_name == 'release')) }}"
+        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           folder: build/publish-jd
