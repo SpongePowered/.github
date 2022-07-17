@@ -23,6 +23,16 @@ on:
         type: boolean
         required: false
         default: true
+      extra_gradle_params:
+        description: 'Extra arguments to pass to all Gradle invocations'
+        required: false
+        type: string
+        default: ''
+      extra_gradle_publish_params:
+        description: 'Extra arguments to pass to the Gradle invocation that publishes this project'
+        required: false
+        type: string
+        default: ''
     secrets:
       SPONGE_JD_DEPLOY_KEY:
         description: 'SSH Key to deploy javadocs'
@@ -91,7 +101,7 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           cache-read-only: "${{ steps.branch-name.outputs.match == '' || github.event_name == 'pull_request' }}"
-          arguments: build
+          arguments: ${{ inputs.extra_gradle_params }} build
       - name: Archive test results
         if: "${{ always() }}"
         uses: actions/upload-artifact@v3
@@ -114,7 +124,7 @@ jobs:
           echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
       - name: Publish with Gradle
         if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && github.event_name == 'release')) }}"
-        run: ./gradlew -PforceSign=true publish
+        run: ./gradlew -PforceSign=true ${{ inputs.extra_gradle_params }} publish ${{ inputs.extra_gradle_publish_params }}
         env:
           ORG_GRADLE_PROJECT_githubPackagesUsername: "${{ github.actor }}"
           ORG_GRADLE_PROJECT_githubPackagesPassword: "${{ secrets.GITHUB_TOKEN }}"
@@ -131,7 +141,7 @@ jobs:
         if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
         run: |
           mkdir -p build/publish-jd
-          ./gradlew copyJavadoc --output build/publish-jd
+          ./gradlew ${{ inputs.extra_gradle_params }} copyJavadoc --output build/publish-jd
       - name: Publish Javadoc
         if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
         uses: JamesIves/github-pages-deploy-action@v4

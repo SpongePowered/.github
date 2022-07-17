@@ -14,6 +14,11 @@ on:
         required: false
         type: string
         default: 'master|main|trunk|(\d+\.(?:\d+\.)?x)'
+      extra_gradle_params:
+        description: 'Extra arguments to pass to all Gradle invocations'
+        required: false
+        type: string
+        default: ''
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.number || github.ref }}"
@@ -48,4 +53,4 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           cache-read-only: "${{ steps.branch-name.outputs.match == '' || github.event_name == 'pull_request' }}"
-          arguments: spotlessCheck
+          arguments: ${{ inputs.extra_gradle_params }} spotlessCheck
