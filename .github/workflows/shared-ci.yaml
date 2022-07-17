@@ -61,6 +61,12 @@ on:
       SPONGE_SIGNING_PASSWORD:
         description: 'Sponge Codesigning Password'
         required: false
+      GRADLE_PLUGIN_PORTAL_KEY:
+        description: 'Gradle Plugin Portal API Key'
+        required: false
+      GRADLE_PLUGIN_PORTAL_SECRET:
+        description: 'Gradle Plugin Portal API Secret'
+        required: false
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.event.number || github.ref }}"
@@ -136,6 +142,8 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SPONGE_MAVEN_OSSRH_PASSWORD }}"
           ORG_GRADLE_PROJECT_spongeSigningKey: "${{ secrets.SPONGE_SIGNING_KEY }}"
           ORG_GRADLE_PROJECT_spongeSigningPassword: "${{ secrets.SPONGE_SIGNING_PASSWORD }}"
+          ORG_GRADLE_PROJECT_pluginPortalApiKey: "${{ secrets.GRADLE_PLUGIN_PORTAL_KEY }}"
+          ORG_GRADLE_PROJECT_pluginPortalApiSecret: "${{ secrets.GRADLE_PLUGIN_PORTAL_SECRET }}"
 
       - name: Copy Javadoc for Publication
         if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
