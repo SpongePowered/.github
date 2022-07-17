@@ -15,8 +15,12 @@ on:
         type: string
         default: 'master|main|trunk|(\d+\.(?:\d+\.)?x)'
 
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.number || github.ref }}"
+  cancel-in-progress: true
+
 jobs:
-  build:
+  check:
     # Only run on PRs if the source branch is on someone else's repo
     if: "${{ github.event_name != 'pull_request' || github.repository != github.event.pull_request.head.repo.full_name }}"
 
