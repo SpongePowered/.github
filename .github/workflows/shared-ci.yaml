@@ -15,6 +15,7 @@ on:
         default: 'master|main|trunk|(\d+\.(?:\d+\.)?x)'
       publish_snapshot_javadoc:
         description: 'Whether to publish Javadoc to the Javadoc site for snapshot builds'
+        type: string
         required: false
     secrets:
       SPONGE_JD_DEPLOY_KEY:
@@ -64,7 +65,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: true
-          ssh-key: "${{ secrets.SPONGE_JD_DEPLOY_KEY }}"
       - name: "Setup JDK ${{ inputs.runtime_version }}"
         uses: actions/setup-java@v3
         with:
@@ -120,15 +120,22 @@ jobs:
           ORG_GRADLE_PROJECT_sonatypePassword: "${{ secrets.SPONGE_MAVEN_OSSRH_PASSWORD }}"
           ORG_GRADLE_PROJECT_spongeSigningKey: "${{ secrets.SPONGE_SIGNING_KEY }}"
           ORG_GRADLE_PROJECT_spongeSigningPassword: "${{ secrets.SPONGE_SIGNING_PASSWORD }}"
+
+      - name: Copy Javadoc for Publication
+        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && github.event_name == 'release')) }}"
+        run: |
+          mkdir -p build/publish-jd
+          ./gradlew copyJavadoc --output build/publish-jd
       - name: Publish Javadoc
         if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && github.event_name == 'release')) }}"
-        env:
-          PROJECT_NAME: ${{ github.repository }}
-        run: |
-          git clone git@github.com:SpongePowered/APIJavadocs.git publish-jd -b data -c core.sshCommand="$(git config --local --get core.sshCommand)" -c user.name=Spongie -c user.email="staff@spongepowered.org"
-          ./gradlew copyJavadoc publish-jd
-          git add .
-          git commit -m "Publishing javadoc for $PROJECT_NAME $PROJECT_VERSION" || true
-          git push origin
-          cd ..
-          rm -rf publish-jd
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: build/publish-jd
+          ssh-key: "${{ secrets.SPONGE_JD_DEPLOY_KEY }}"
+          repository-name: SpongePowered/APIJavadocs
+          branch: data
+          git-config-name: Spongie
+          git-config-email: staff@spongepowered.org
+          clean: false
+          force: false
+          commit-message: "Publishing javadoc for ${{ github.repository }} ${{ env.PROJECT_VERSION }}"
