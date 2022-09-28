@@ -90,6 +90,20 @@
       ],
       "groupName": "all non-major docker images",
       "groupSlug": "all-docker-minor-patch"
+    },
+    {
+      "matchDatasources": [
+        "pypi"
+      ],
+      "matchPackagePatterns": [
+        "*"
+      ],
+      "matchUpdateTypes": [
+        "minor",
+        "patch"
+      ],
+      "groupName": "all non-major python dependencies",
+      "groupSlug": "all-pypi-minor-patch"
     }
   ],
   "prHourlyLimit": 4,
