@@ -38,7 +38,7 @@ jobs:
         java-version: "${{ inputs.runtime_version }}"
     # Checks branch name to see if we're going to potentially publish this
     - name: Check branch for publish
-      uses: zml2008/action-regex-match@temp-deprecation-fix # fork, to be PR'd upstream
+      uses: KyoriPowered/action-regex-match@v3
       id: branch-name
       with:
         text: ${{ github.ref }}
