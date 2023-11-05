@@ -46,6 +46,11 @@
       "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(-(?<compatibility>.*))?$"
     },
     {
+      "description": "Correct CodeNarc version handling",
+      "matchPackagePrefixes": ["org.codenarc:CodeNarc"],
+      "versioning": "regex:^(?<major>\\d+)(\\.(?<minor>\\d+))?(\\.(?<patch>\\d+))?(-(?<compatibility>.*))?$"
+    },
+    {
       "matchManagers": ["github-actions", "gradle-wrapper"],
       "groupName": "build deps and github actions"
     },
