@@ -35,10 +35,10 @@ jobs:
         publishing_branch_regex: ${{ inputs.publishing_branch_regex }}
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+      uses: github/codeql-action/init@4759df8df70c5ebe7042c3029bbace20eee13edd # v2
       with:
         languages: java
     - name: Build with Gradle
       run: ./gradlew ${{ inputs.extra_gradle_params }} assemble
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+      uses: github/codeql-action/analyze@4759df8df70c5ebe7042c3029bbace20eee13edd # v2

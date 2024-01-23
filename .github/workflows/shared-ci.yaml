@@ -99,7 +99,7 @@ jobs:
         run: ./gradlew ${{ inputs.extra_gradle_params }} build
       - name: Archive test results
         if: "${{ always() }}"
-        uses: actions/upload-artifact@v4.2.0
+        uses: actions/upload-artifact@694cdabd8bdb0f10b2cea11669e1bf5453eed0a6 # v4.2.0
         with:
           name: "${{ runner.os }}-test-results"
           path: |
@@ -141,7 +141,7 @@ jobs:
           ./gradlew ${{ inputs.extra_gradle_params }} copyJavadoc --output build/publish-jd/${{ inputs.javadoc_deploy_prefix }}
       - name: Publish Javadoc
         if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.setup.outputs.publishing_branch != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
-        uses: JamesIves/github-pages-deploy-action@v4.5.0
+        uses: JamesIves/github-pages-deploy-action@65b5dfd4f5bcd3a7403bbc2959c144256167464e # v4.5.0
         with:
           folder: build/publish-jd
           ssh-key: "${{ secrets.SPONGE_JD_DEPLOY_KEY }}"
