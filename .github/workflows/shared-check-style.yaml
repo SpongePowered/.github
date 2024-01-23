@@ -31,26 +31,13 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - name: Check out
-        uses: actions/checkout@v3
+      - name: setup
+        id: setup
+        uses: SpongePowered/.github/.github/actions/setup-java-env@master
         with:
-          submodules: true
-      - name: "Setup JDK ${{ inputs.runtime_version }}"
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: "${{ inputs.runtime_version }}"
-      # Checks branch name to see if we're going to potentially publish this
-      - name: Check branch for publish
-        uses: KyoriPowered/action-regex-match@v3
-        id: branch-name
-        with:
-          text: ${{ github.ref }}
-          regex: '^refs/heads/(?:${{ inputs.publishing_branch_regex }})$' # master or something like 0.8.x or 2.x
+          runtime_version: ${{ inputs.runtime_version }}
+          publishing_branch_regex: ${{ inputs.publishing_branch_regex }}
 
       # Run checkstyle checks, trying to execute all tasks even if some fail
       - name: Run Checkstyle Check
-        uses: gradle/gradle-build-action@v2
-        with:
-          cache-read-only: "${{ steps.branch-name.outputs.match == '' || github.event_name == 'pull_request' }}"
-          arguments: --continue ${{ inputs.extra_gradle_params }} checkstyleAll
+        run: ./gradlew --continue ${{ inputs.extra_gradle_params }} checkstyleAll

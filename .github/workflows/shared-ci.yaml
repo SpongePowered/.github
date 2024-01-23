@@ -87,35 +87,19 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     steps:
-      # Setup
-      - name: Check out
-        uses: actions/checkout@v3
+      - name: setup
+        id: setup
+        uses: SpongePowered/.github/.github/actions/setup-java-env@master
         with:
-          submodules: true
-      - name: "Setup JDK ${{ inputs.runtime_version }}"
-        uses: actions/setup-java@v3
-        with:
-          distribution: temurin
-          java-version: "${{ inputs.runtime_version }}"
-      - name: Validate Gradle wrapper
-        uses: gradle/wrapper-validation-action@v1
-      # Checks branch name to see if we're going to potentially publish this
-      - name: Check branch for publish
-        uses: KyoriPowered/action-regex-match@v3
-        id: branch-name
-        with:
-          text: ${{ github.ref }}
-          regex: '^refs/heads/(?:${{ inputs.publishing_branch_regex }})$' # master or something like 0.8.x or 2.x
+          runtime_version: ${{ inputs.runtime_version }}
+          publishing_branch_regex: ${{ inputs.publishing_branch_regex }}
 
       # Actually build
       - name: Run Gradle Build
-        uses: gradle/gradle-build-action@v2
-        with:
-          cache-read-only: "${{ steps.branch-name.outputs.match == '' || github.event_name == 'pull_request' }}"
-          arguments: ${{ inputs.extra_gradle_params }} build
+        run: ./gradlew ${{ inputs.extra_gradle_params }} build
       - name: Archive test results
         if: "${{ always() }}"
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4.2.0
         with:
           name: "${{ runner.os }}-test-results"
           path: |
@@ -134,7 +118,7 @@ jobs:
           fi
           echo "PROJECT_VERSION=$VERSION" >> $GITHUB_ENV
       - name: Publish with Gradle
-        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && github.event_name == 'release')) }}"
+        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && github.event_name == 'push' && steps.setup.outputs.publishing_branch != '') || (env.STATUS == 'release' && github.event_name == 'release')) }}"
         run: ./gradlew -PforceSign=true ${{ inputs.extra_gradle_params }} publish ${{ inputs.extra_gradle_publish_params }}
         env:
           ORG_GRADLE_PROJECT_githubPackagesUsername: "${{ github.actor }}"
@@ -151,13 +135,13 @@ jobs:
           ORG_GRADLE_PROJECT_pluginPortalApiSecret: "${{ secrets.GRADLE_PLUGIN_PORTAL_SECRET }}"
 
       - name: Copy Javadoc for Publication
-        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
+        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.setup.outputs.publishing_branch != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
         run: |
           mkdir -p build/publish-jd/${{ inputs.javadoc_deploy_prefix }}
           ./gradlew ${{ inputs.extra_gradle_params }} copyJavadoc --output build/publish-jd/${{ inputs.javadoc_deploy_prefix }}
       - name: Publish Javadoc
-        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.branch-name.outputs.match != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
-        uses: JamesIves/github-pages-deploy-action@v4
+        if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.setup.outputs.publishing_branch != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
+        uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           folder: build/publish-jd
           ssh-key: "${{ secrets.SPONGE_JD_DEPLOY_KEY }}"

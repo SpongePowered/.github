@@ -27,31 +27,18 @@ jobs:
       fail-fast: false
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+    - name: setup
+      id: setup
+      uses: SpongePowered/.github/.github/actions/setup-java-env@master
       with:
-        submodules: true
-    - name: "Setup JDK ${{ inputs.runtime_version }}"
-      uses: actions/setup-java@v3
-      with:
-        distribution: temurin
-        java-version: "${{ inputs.runtime_version }}"
-    # Checks branch name to see if we're going to potentially publish this
-    - name: Check branch for publish
-      uses: KyoriPowered/action-regex-match@v3
-      id: branch-name
-      with:
-        text: ${{ github.ref }}
-        regex: '^refs/heads/(?:${{ inputs.publishing_branch_regex }})$'
+        runtime_version: ${{ inputs.runtime_version }}
+        publishing_branch_regex: ${{ inputs.publishing_branch_regex }}
 
     - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: java
     - name: Build with Gradle
-      uses: gradle/gradle-build-action@v2
-      with:
-        cache-read-only: "${{ steps.branch-name.outputs.match == '' || github.event_name == 'pull_request' }}"
-        arguments: ${{ inputs.extra_gradle_params }} assemble
+      run: ./gradlew ${{ inputs.extra_gradle_params }} assemble
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
