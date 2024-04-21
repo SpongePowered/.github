@@ -53,7 +53,7 @@ jobs:
           output_file: "${{ inputs.injected_version_path }}/injected-gradle-versions"
       - name: "run gradle build / added tests on ${{ steps.determine-target.outputs.latest_rc_or_nightly }}"
         if: "${{ steps.determine-target.outputs.latest_rc_or_nightly }}"
-        run: "${{ inputs.extra_gradle_params }} build"
+        run: "./gradlew ${{ inputs.extra_gradle_params }} build"
       - name: "archive test results"
         if: "${{ always() }}"
         uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
@@ -67,11 +67,12 @@ jobs:
         env:
           GRADLE_VERSION: "${{ steps.determine-target.outputs.latest_rc_or_nightly }}"
           EXTRA_GRADLE_PARAMS: "${{ inputs.extra_gradle_params }}"
+        shell: bash
         run: |
           echo "Fetching Gradle $GRADLE_VERSION"
           BASEDIR="/tmp/gradle-bins/"
           mkdir -p "$BASEDIR"
-          GRADLE_DOWNLOAD_URL=$(curl "https://services.gradle.org/versions/all" | jq -r ".[] | select(.version=='$GRADLE_VERSION').downloadUrl")
+          GRADLE_DOWNLOAD_URL=$(curl "https://services.gradle.org/versions/all" | jq -r ".[] | select(.version==\"$GRADLE_VERSION\").downloadUrl")
           curl "$GRADLE_DOWNLOAD_URL" -Lo "/tmp/gradle-$GRADLE_VERSION.zip"
           unzip "/tmp/gradle-$GRADLE_VERSION.zip" -d "$BASEDIR"
 
