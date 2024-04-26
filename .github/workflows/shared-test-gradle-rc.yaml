@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: "setup environment"
         id: "setup"
-        uses: "SpongePowered/.github/.github/actions/setup-java-env@trunk"
+        uses: "SpongePowered/.github/.github/actions/setup-java-env@master"
         with:
           runtime_version: "${{ inputs.runtime_version }}"
           publishing_branch_regex: "__none__"
