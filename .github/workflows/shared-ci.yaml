@@ -153,7 +153,7 @@ jobs:
           installation_retrieval_payload: "SpongePowered/APIJavadocs"
       - name: Publish Javadoc
         if: "${{ runner.os == 'Linux' && ((env.STATUS != 'release' && inputs.publish_snapshot_javadoc && github.event_name == 'push' && steps.setup.outputs.publishing_branch != '') || (env.STATUS == 'release' && inputs.publish_release_javadoc && github.event_name == 'release')) }}"
-        uses: JamesIves/github-pages-deploy-action@881db5376404c5c8d621010bcbec0310b58d5e29 # v4.6.8
+        uses: JamesIves/github-pages-deploy-action@15de0f09300eea763baee31dff6c6184995c5f6a # v4.7.2
         with:
           folder: build/publish-jd
           repository-name: SpongePowered/APIJavadocs
