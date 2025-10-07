@@ -46,7 +46,7 @@ jobs:
           publishing_branch_regex: "__none__"
           gradle_warning_mode: "fail"
       - name: "determine target version"
-        uses: "KyoriPowered/get-gradle-versions@6a31baddaa856d1877c5c0070e58ba8db82b1389" # v2.0.0
+        uses: "KyoriPowered/get-gradle-versions@a463abd135fb9c78b50140cd148b049459892723" # v3.0.0
         id: "determine-target"
         with:
           override: "${{ inputs.gradle_version }}"
