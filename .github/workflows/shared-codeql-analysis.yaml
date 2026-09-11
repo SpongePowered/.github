@@ -29,16 +29,16 @@ jobs:
     steps:
     - name: setup
       id: setup
-      uses: SpongePowered/.github/.github/actions/setup-java-env@master
+      uses: SpongePowered/.github/.github/actions/setup-java-env@77240a8dfdf1b9049e4c9e2b038de35df915cd32 # master
       with:
         runtime_version: ${{ inputs.runtime_version }}
         publishing_branch_regex: ${{ inputs.publishing_branch_regex }}
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@19b2f06db2b6f5108140aeb04014ef02b648f789 # v4
+      uses: github/codeql-action/init@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4
       with:
         languages: java
     - name: Build with Gradle
       run: ./gradlew ${{ inputs.extra_gradle_params }} assemble
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@19b2f06db2b6f5108140aeb04014ef02b648f789 # v4
+      uses: github/codeql-action/analyze@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4

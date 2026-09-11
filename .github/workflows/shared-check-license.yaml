@@ -34,7 +34,7 @@ jobs:
     steps:
       - name: setup
         id: setup
-        uses: SpongePowered/.github/.github/actions/setup-java-env@master
+        uses: SpongePowered/.github/.github/actions/setup-java-env@77240a8dfdf1b9049e4c9e2b038de35df915cd32 # master
         with:
           runtime_version: ${{ inputs.runtime_version }}
           publishing_branch_regex: ${{ inputs.publishing_branch_regex }}
